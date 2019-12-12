@@ -29,7 +29,7 @@ ext {
     scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     versions = [
-            'elasticsearch' : '5.1.1',
+            'elasticsearch' : '7.5.0',
             'log4j': '2.7'
     ]
 }
@@ -103,7 +103,7 @@ task makePluginDescriptor(type: Copy) {
 task buildPluginZip(type: Zip, dependsOn: [':jar', ':makePluginDescriptor']) {
     from configurations.distJars
     from 'build/tmp/plugin'
-    into 'elasticsearch'
+    into ''
     classifier = 'plugin'
 }
 

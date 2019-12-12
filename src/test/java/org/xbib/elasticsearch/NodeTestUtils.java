@@ -11,8 +11,7 @@ import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.transport.LocalTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.node.MockNode;
 import org.elasticsearch.node.Node;
@@ -20,11 +19,7 @@ import org.elasticsearch.node.NodeValidationException;
 import org.xbib.elasticsearch.plugin.naturalsort.NaturalSortAnalysisPlugin;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -136,15 +131,11 @@ public class NodeTestUtils {
         NodesInfoRequestBuilder nodesInfoRequestBuilder = new NodesInfoRequestBuilder(client, NodesInfoAction.INSTANCE);
         nodesInfoRequestBuilder.setTransport(true);
         NodesInfoResponse response = nodesInfoRequestBuilder.execute().actionGet();
-        Object obj = response.getNodes().iterator().next().getTransport().getAddress().publishAddress();
-        if (obj instanceof InetSocketTransportAddress) {
-            InetSocketTransportAddress address = (InetSocketTransportAddress) obj;
+        TransportAddress address = response.getNodes().iterator().next().getTransport().getAddress().publishAddress();
+        if (address != null) {
             host = address.address().getHostName();
-        } else if (obj instanceof LocalTransportAddress) {
-            LocalTransportAddress address = (LocalTransportAddress) obj;
-            host = address.getHost();
         } else {
-            logger.info("class=" + obj.getClass());
+            logger.info("class null");
         }
         if (host == null) {
             throw new IllegalArgumentException("host not found");
@@ -155,15 +146,11 @@ public class NodeTestUtils {
         NodesInfoRequestBuilder nodesInfoRequestBuilder = new NodesInfoRequestBuilder(client, NodesInfoAction.INSTANCE);
         nodesInfoRequestBuilder.setHttp(true).setTransport(false);
         NodesInfoResponse response = nodesInfoRequestBuilder.execute().actionGet();
-        Object obj = response.getNodes().iterator().next().getHttp().getAddress().publishAddress();
-        if (obj instanceof InetSocketTransportAddress) {
-            InetSocketTransportAddress httpAddress = (InetSocketTransportAddress) obj;
-            return "http://" + httpAddress.getHost() + ":" + httpAddress.getPort();
-        } else if (obj instanceof LocalTransportAddress) {
-            LocalTransportAddress httpAddress = (LocalTransportAddress) obj;
-            return "http://" + httpAddress.getHost() + ":" + httpAddress.getPort();
+        TransportAddress address = response.getNodes().iterator().next().getHttp().getAddress().publishAddress();
+        if (address != null) {
+            return "http://" + address.address().getHostName() + ":" + address.address().getPort();
         } else {
-            logger.info("class=" + obj.getClass());
+            logger.info("class null");
         }
         return null;
     }
@@ -172,7 +159,7 @@ public class NodeTestUtils {
         Settings nodeSettings = Settings.builder()
                 .put(getNodeSettings())
                 .build();
-        logger.info("settings={}", nodeSettings.getAsMap());
+        logger.info("settings={}", nodeSettings.getAsGroups());
         return new MockNode(nodeSettings, Collections.emptyList());
     }
 
@@ -180,7 +167,7 @@ public class NodeTestUtils {
         Settings nodeSettings = Settings.builder()
                 .put(getNodeSettings())
                 .build();
-        logger.info("settings={}", nodeSettings.getAsMap());
+        logger.info("settings={}", nodeSettings.getAsGroups());
         return new MockNode(nodeSettings, Collections.singletonList(NaturalSortAnalysisPlugin.class));
     }
 

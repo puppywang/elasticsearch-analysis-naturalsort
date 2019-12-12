@@ -56,7 +56,7 @@ public class NaturalSortKeyTests extends NodeTestUtils {
                     .addSort("points.sort", SortOrder.ASC)
                     .execute().actionGet();
 
-            assertEquals(3L, searchResponse.getHits().totalHits());
+            assertEquals(3L, searchResponse.getHits().getTotalHits().value);
             assertEquals("Bob: 2 points", searchResponse.getHits().getAt(0).field("points").getValue().toString());
             assertEquals("Bob: 3 points", searchResponse.getHits().getAt(1).field("points").getValue().toString());
             assertEquals("Bob: 10 points", searchResponse.getHits().getAt(2).field("points").getValue().toString());
@@ -104,7 +104,7 @@ public class NaturalSortKeyTests extends NodeTestUtils {
                     .addStoredField("points")
                     .addSort("points.sort", SortOrder.ASC)
                     .execute().actionGet();
-            assertEquals(6L, searchResponse.getHits().totalHits());
+            assertEquals(6L, searchResponse.getHits().getTotalHits().value);
             assertEquals("7 1 1 1", searchResponse.getHits().getAt(0).field("points").getValue().toString());
             assertEquals("7 2 1 2", searchResponse.getHits().getAt(1).field("points").getValue().toString());
             assertEquals("7 10 1 1", searchResponse.getHits().getAt(2).field("points").getValue().toString());
@@ -116,7 +116,7 @@ public class NaturalSortKeyTests extends NodeTestUtils {
                     .addStoredField("points")
                     .addSort("points.sort", SortOrder.DESC)
                     .execute().actionGet();
-            assertEquals(6L, searchResponse.getHits().totalHits());
+            assertEquals(6L, searchResponse.getHits().getTotalHits().value);
             assertEquals("7 201 2 1", searchResponse.getHits().getAt(0).field("points").getValue().toString());
             assertEquals("7 25 2 1", searchResponse.getHits().getAt(1).field("points").getValue().toString());
             assertEquals("7 20 2 1", searchResponse.getHits().getAt(2).field("points").getValue().toString());
@@ -167,7 +167,7 @@ public class NaturalSortKeyTests extends NodeTestUtils {
                     .addStoredField("notation")
                     .addSort("notation.sort", SortOrder.ASC)
                     .execute().actionGet();
-            assertEquals(7L, searchResponse.getHits().totalHits());
+            assertEquals(7L, searchResponse.getHits().getTotalHits().value);
             assertEquals("1.0.0", searchResponse.getHits().getAt(0).field("notation").getValue().toString());
             assertEquals("1.10.0", searchResponse.getHits().getAt(1).field("notation").getValue().toString());
             assertEquals("2.1.1", searchResponse.getHits().getAt(2).field("notation").getValue().toString());
